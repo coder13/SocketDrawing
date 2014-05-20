@@ -17,7 +17,7 @@
                 $('#status').text('Status: Disconnected');
             });
  
-            $('#textArea').keypress(function(event) {
+            $('#textArea').on("input propertychange", function(event) {
                 iosocket.send($('#textArea').val());   
             });
         });
