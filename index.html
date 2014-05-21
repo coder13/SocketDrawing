@@ -3,28 +3,31 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        $(function(){
-            var iosocket = io.connect();
- 
-            iosocket.on('connect', function () {
-                $('#status').text('Status: Connected');
-            });
- 
-            iosocket.on('message', function(message) {
-                $('#textArea').val(message);
-            });
-            iosocket.on('disconnect', function() {
-                $('#status').text('Status: Disconnected');
-            });
- 
-            $('#textArea').on("input propertychange", function(event) {
-                iosocket.send($('#textArea').val());   
-            });
-        });
-    </script>
+    	$(function() {
+    	    var iosocket = io.connect();
+    	    iosocket.emit('get');
+
+    	    iosocket.on('connect', function () {
+    	        $('#status').text('Status: Connected');
+    	    });
+
+    	    iosocket.on('message', function(message) {
+    	        $('#textArea').val(message);
+    	    });
+
+    	    iosocket.on('disconnect', function() {
+    	        $('#status').text('Status: Disconnected');
+    	    });
+
+    	    $('#textArea').on("input propertychange", function(event) {
+    	        iosocket.send($('#textArea').val());   
+    	    });
+    	});
+	</script>
+   
 </head>
 <body>
-	<p id='status'>Status: </p>
+	<p id='status'>Status: Disconnected</p>
 	<hr>
 	<textarea id="textArea"></textarea>
 </body>
