@@ -2,8 +2,8 @@
 <head>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
 
+    <script>
     	$(function() {
     	    var iosocket = io.connect();
 
@@ -23,6 +23,7 @@
             $('#textArea').on("input propertychange", function(event) {
     	        iosocket.send($('#textArea').val());   
     	    });
+
     	});
 	</script>
    
@@ -30,6 +31,7 @@
 <body>
 	<p id='status'>Status: Disconnected</p>
 	<hr>
-	<textarea id="textArea" style="width: 800px; height: 400px"></textarea>
+	<textarea id="textArea" style="width: 800px; height: 500px"></textarea>
+
 </body>
 </html>
