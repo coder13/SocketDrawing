@@ -1,7 +1,7 @@
 var fs = require('fs'), 
 	http = require('http'),	
 	socketIO = require('socket.io'), 
-	port = 8000;
+	port = 8080;
  
 
 var server = http.createServer(function(req, res) {
@@ -21,5 +21,4 @@ socketIO.listen(server).on('connection', function (client) {
     	data = msg;
         client.broadcast.emit('message', msg);
     });
-
-}).set('log level', 1);
+}).set('log level', 1); 
