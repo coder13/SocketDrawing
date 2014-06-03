@@ -2,6 +2,7 @@ var fs = require('fs'),
 	http = require('http'),	
 	socketIO = require('socket.io'), 
 	port = 8000;
+<<<<<<< HEAD
  
 
 var server = http.createServer(function(req, res) {
@@ -19,6 +20,13 @@ var server = http.createServer(function(req, res) {
         res.end(fs.readFileSync(__dirname + req.url));
     } catch (e) {}
 }).listen(port, function() {
+=======
+
+var server = http.createServer(function(req, res) {
+    res.writeHead(200, { 'Content-type': 'text/html'});
+    res.end(fs.readFileSync(__dirname + '/index.html'));
+}).listen(port, "0.0.0.0", function() {
+>>>>>>> 997ffe9a4cef7d152d8027c232ab91ecd201fb6e
     console.log('Listening at: http://localhost:' + port);
 });
 
