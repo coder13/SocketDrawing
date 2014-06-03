@@ -1,35 +1,44 @@
 <html>
 <head>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="js/jquery-2.1.0.js"></script>
     <script>
+    	var path = "";
 
-    	$(function() {
-    	    var iosocket = io.connect();
+        $(function() {
+            var iosocket = io.connect();
+            var svgCon = $("#mainSvg");
 
-    	    iosocket.on('connect', function () {
-    	        $('#status').text('Status: Connected');
-    	    });
+            svgCon.on("click", function(event) {
+                path += event.offsetX + "," + event.offsetY + " ";
 
-    	    iosocket.on('message', function(message) {
-                console.log(message);
-                $('#textArea').val(message);
+                document.getElementById('path').setAttribute("d", path);
+
+               iosocket.send(path); 
             });
 
+            iosocket.on('connect', function () {
+                $('#status').text('Status: Connected');
+            });
+
+            iosocket.on('message', function(data) {
+                path = data;
+                document.getElementById('path').setAttribute("d", data);
+            });
+            
             iosocket.on('disconnect', function() {
                 $('#status').text('Status: Disconnected');
             });
-
-            $('#textArea').on("input propertychange", function(event) {
-    	        iosocket.send($('#textArea').val());   
-    	    });
-    	});
+        });
 	</script>
    
 </head>
 <body>
 	<p id='status'>Status: Disconnected</p>
 	<hr>
-	<textarea id="textArea" style="width: 800px; height: 400px"></textarea>
+	<svg id="mainSvg">
+      <path id="path" style="fill:none;stroke:black;stroke-width:3"/>
+      Sorry, your browser does not support inline SVG.
+    </svg>
 </body>
 </html>

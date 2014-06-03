@@ -1,10 +1,11 @@
 html
 head
-    script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js")
+    script(src="js/jquery-2.1.0.js")
     script(src="/socket.io/socket.io.js")
     script(src="/js/client.js")
 
 body
 	p#statusStatus: Disconnected
 	hr
-	textarea#textArea()
+	svg#mainSvg
+		path#path(style="fill:none;stroke:black;stroke-width:3")
