@@ -9,7 +9,7 @@
             var iosocket = io.connect();
 
             svgCon = $("#mainSvg");
-            svgCon.on("click", function(event) {
+            svgCon.on("hover", function(event) {
                 path += event.offsetX + "," + event.offsetY + " ";
                 document.getElementById("path").setAttribute("d", path);
 
