@@ -1,68 +1,43 @@
 <html>
 <head>
-<<<<<<< HEAD
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/jquery-2.1.0.js"></script>
     <script>
-    	var path = "";
+        var path = "B ";
 
         $(function() {
             var iosocket = io.connect();
-            var svgCon = $("#mainSvg");
-=======
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    P<script src="file:///Users/caleb/Projects/SocketDrawing/js/svg.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
 
-    <script>
-    	$(function() {
-    	    var iosocket = io.connect();
->>>>>>> 997ffe9a4cef7d152d8027c232ab91ecd201fb6e
-
+            svgCon = $("#mainSvg");
             svgCon.on("click", function(event) {
                 path += event.offsetX + "," + event.offsetY + " ";
-
-                document.getElementById('path').setAttribute("d", path);
+                document.getElementById("path").setAttribute("d", path);
 
                iosocket.send(path); 
             });
 
-            iosocket.on('connect', function () {
-                $('#status').text('Status: Connected');
+            iosocket.on("connect", function () {
+                $("#status").text("Connected");
             });
 
-            iosocket.on('message', function(data) {
+            iosocket.on("message", function(data) {
                 path = data;
-                document.getElementById('path').setAttribute("d", data);
+                document.getElementById("path").setAttribute("d", data);
             });
             
-            iosocket.on('disconnect', function() {
-                $('#status').text('Status: Disconnected');
+            iosocket.on("disconnect", function() {
+                $("#status").text("Disconnected");
             });
-<<<<<<< HEAD
         });
-=======
-
-            $('#textArea').on("input propertychange", function(event) {
-    	        iosocket.send($('#textArea').val());   
-    	    });
-
-    	});
->>>>>>> 997ffe9a4cef7d152d8027c232ab91ecd201fb6e
-	</script>
+    </script>
    
 </head>
 <body>
-	<p id='status'>Status: Disconnected</p>
-	<hr>
-<<<<<<< HEAD
-	<svg id="mainSvg">
+    <p>Status: <span id="status">Disconnected</span></p>
+    <hr>
+    <svg id="mainSvg">
       <path id="path" style="fill:none;stroke:black;stroke-width:3"/>
       Sorry, your browser does not support inline SVG.
     </svg>
-=======
-	<textarea id="textArea" style="width: 800px; height: 500px"></textarea>
-
->>>>>>> 997ffe9a4cef7d152d8027c232ab91ecd201fb6e
 </body>
 </html>
