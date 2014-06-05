@@ -3,13 +3,13 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/jquery-2.1.0.js"></script>
     <script>
-        var path = "M ";
+        var path = "";
 
         $(function() {
             var iosocket = io.connect();
 
             svgCon = $("#mainSvg");
-            svgCon.on("hover", function(event) {
+            svgCon.on("click", function(event) {
                 path += event.offsetX + "," + event.offsetY + " ";
                 document.getElementById("path").setAttribute("d", path);
 

@@ -9,7 +9,10 @@ var server = http.createServer(function(req, res) {
             res.writeHead(200, { "Content-type": "text/html"});
             res.end(fs.readFileSync(__dirname + "/index.html"));
         } else {
-            res.writeHead(200, { "Content-type": "text/plain"});
+            if (req.url.split('/')[1] == 'js')
+                res.writeHead(200, { "Content-type": "text/javascript"});
+            else
+                res.writeHead(200, { "Content-type": "text/plain"});
             res.end(fs.readFileSync(__dirname + req.url));
         }
     } catch (e) {}
