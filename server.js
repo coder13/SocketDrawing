@@ -20,14 +20,21 @@ var server = http.createServer(function(req, res) {
     console.log("Listening at: http://localhost:" + port);
 });
 
-var data = "M "
+// path = {owner: , id: , d: }
+
+var app = {
+    paths: [
+
+    ]
+};
 
 socketIO.listen(server).on("connection", function (client) {
-	console.log("client connected");
-	client.emit("message", data);
+	console.log("client connected with id: " + client.id);
 
-    client.on("message", function (msg) {
-    	data = msg;
-        client.broadcast.emit("message", msg);
+	client.emit("init", JSON.stringify({id: client.id, data: app.paths}));
+
+    client.on("new", function (data) {
+        app.paths.push(JSON.parse(data));
+        
     });
 }).set("log level", 1); 

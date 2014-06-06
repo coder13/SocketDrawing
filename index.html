@@ -3,41 +3,91 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/jquery-2.1.0.js"></script>
     <script>
-        var path = "";
+        var svgCon,
+            ID, 
+            currentPath,
+            paths = [];
 
         $(function() {
             var iosocket = io.connect();
-
             svgCon = $("#mainSvg");
-            svgCon.on("click", function(event) {
-                path += event.offsetX + "," + event.offsetY + " ";
-                document.getElementById("path").setAttribute("d", path);
 
-               iosocket.send(path); 
+            iosocket.on("init", function (data) {
+                var initData = JSON.parse(data);
+                console.log(data);
+                ID = initData.id;
+                $("#id").text(initData.id);
+                paths = initData.data;
+                paths.forEach(function (p) {
+                    if (p.owner != ID) {
+                        createPathFromData(p);
+                    }
+                });
+            });
+
+            svgCon.on("mousedown", function(event) {
+                currentPath = createPath(ID);
+            });
+
+            svgCon.on("mousemove", function(event) {
+                if (currentPath != null) {
+                    currentPath.d += event.offsetX + "," + event.offsetY + " ";
+                    $("#" + currentPath.id).attr({d: currentPath.d});
+                }
+            });
+
+            svgCon.on("mouseup", function(event) {
+                paths.push(currentPath);
+                currentPath = null;
             });
 
             iosocket.on("connect", function () {
                 $("#status").text("Connected");
-            });
-
-            iosocket.on("message", function(data) {
-                path = data;
-                document.getElementById("path").setAttribute("d", data);
             });
             
             iosocket.on("disconnect", function() {
                 $("#status").text("Disconnected");
             });
         });
+
+        function createPath(owner) {
+            var svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                svgPath.id = 'path_' + paths.length-1;
+                svgPath.setAttribute("class", "line");
+                svgPath.className += owner;
+            document.getElementById('mainSvg').appendChild(svgPath);
+
+            return {owner: owner, id: svgPath.id, d: 'M '};
+        }
+
+        function createPathfromData(path) {
+            var svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                svgPath.id = path.id
+                svgPath.setAttribute("class", "line");
+                svgPath.setAttribute("d", path.d);
+                svgPath.className += path.owner;
+            document.getElementById('mainSvg').appendChild(svgPath);
+        }
     </script>
    
+    <style type="text/css">
+        .line {
+            fill:none;
+            stroke:black;
+            stroke-width:3;
+        }
+
+        .status {
+            display: inline-block;
+        }
+    </style>
+
 </head>
 <body>
-    <p>Status: <span id="status">Disconnected</span></p>
+    <p class='status' style='width: 200px;'>Status: <span id="status">Disconnected</span></p>
+    <p class='status'>ID: <span id="id"></span></p>
     <hr>
-    <svg id="mainSvg">
-      <path id="path" style="fill:none;stroke:black;stroke-width:3"/>
-      Sorry, your browser does not support inline SVG.
+    <svg xmlns="http://www.w3.org/2000/svg" id="mainSvg">Sorry, your browser does not support inline SVG.
     </svg>
 </body>
 </html>
