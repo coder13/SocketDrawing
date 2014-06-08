@@ -5,14 +5,19 @@ var fs = require("fs"),
  
 var server = http.createServer(function(req, res) {
     try {
+
         if (req.url == "/") {
             res.writeHead(200, { "Content-type": "text/html"});
             res.end(fs.readFileSync(__dirname + "/index.html"));
         } else {
-            if (req.url.split('/')[1] == 'js')
-                res.writeHead(200, { "Content-type": "text/javascript"});
+            var path = req.url.split('.');
+            if (path[path.length-1] == 'js')
+                res.writeHead(200, {"Content-type": "text/javascript"});
+            else if(path[path.length-1] == 'css')
+                res.writeHead(200, {"content-type": "text/javascript"})
             else
-                res.writeHead(200, { "Content-type": "text/plain"});
+                res.writeHead(200, {"Content-type": "text/plain"});
+
             res.end(fs.readFileSync(__dirname + req.url));
         }
     } catch (e) {}
@@ -29,12 +34,32 @@ var app = {
 };
 
 socketIO.listen(server).on("connection", function (client) {
-	console.log("client connected with id: " + client.id);
+   console.log("client connected with id: " + client.id);
 
 	client.emit("init", JSON.stringify({id: client.id, data: app.paths}));
 
-    client.on("new", function (data) {
+    client.on("create", function (data) {
         app.paths.push(JSON.parse(data));
-        
+        console.log('created path ' + JSON.parse(data).toString());
+    });
+
+    client.on("update", function (data) {
+        data = JSON.parse(data)
+        app.paths.forEach(function (path) {
+            if (path.owner == data.owner && path.id == data.id) {
+                path.d = data.d;
+                update(data);
+                return;
+            }
+        });
+    });
+
+    function update(path) {
+        client.broadcast.emit('update', JSON.stringify(path));
+    }
+
+    client.on("clear", function(data) {
+        app.paths = [];
+        console.log("clear");
     });
 }).set("log level", 1); 
