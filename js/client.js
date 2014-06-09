@@ -18,13 +18,10 @@ $(function() {
 
     iosocket.on("init", function (data) {
         var initData = JSON.parse(data);
-        console.log(data);
         ID = initData.id;
         $("#id").text(initData.id);
         paths = initData.data;
-        console.log(paths);
         paths.forEach(function (p) {
-            console.log(p);
             createPathFromData(p);
         });
     });
