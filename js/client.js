@@ -24,27 +24,29 @@ $(function() {
         paths = initData.data;
         console.log(paths);
         paths.forEach(function (p) {
+            console.log(p);
             createPathFromData(p);
         });
     });
 
     iosocket.on('update', function (data) {
         data = JSON.parse(data);
-        if (data.owner == ID)
+        if (data.owner == ID || !data)
             return;
+        var add = true;
         paths.forEach(function (p) {
             if (p) {
                 if (p.owner == data.owner && p.id == data.id) {
                     p.d = data.d;
+                    $("#" + p.id).attr({d: p.d});
+                    add = false;
                     return;
                 }
             }
         });
-        paths.push(createPathFromData(data));
-    });
-        
-    $("#clear").on("click", function () {
-        iosocket.emit('clear', 'all');
+        if (add) {
+            paths.push(createPathFromData(data));
+        }
     });
     
     svgCon.on("mousedown", function(event) {
@@ -69,8 +71,7 @@ $(function() {
 function createPath(owner) {
     var svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         svgPath.id = 'path_' + owner + "_" + (paths.length).toString();
-        svgPath.setAttribute("class", "line");
-        svgPath.className += owner;
+        svgPath.setAttribute("class", "line " + owner);
     document.getElementById('mainSvg').appendChild(svgPath);
 
     return {owner: owner, id: svgPath.id, d: 'M '};
@@ -79,8 +80,8 @@ function createPath(owner) {
 function createPathFromData(path) {
     var svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         svgPath.id = path.id
-        svgPath.setAttribute("class", "line");
+        svgPath.setAttribute("class", "line " + path.owner);
         svgPath.setAttribute("d", path.d);
-        svgPath.className += path.owner;
     document.getElementById('mainSvg').appendChild(svgPath);
+    return path;
 }

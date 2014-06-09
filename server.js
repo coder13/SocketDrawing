@@ -1,7 +1,7 @@
 var fs = require("fs"), 
-	http = require("http"),	
-	socketIO = require("socket.io"), 
-	port = (process.argv[2]? +process.argv[2]:8000);
+    http = require("http"), 
+    socketIO = require("socket.io"), 
+    port = (process.argv[2]? +process.argv[2]:8000);
  
 var server = http.createServer(function(req, res) {
     try {
@@ -27,6 +27,7 @@ var server = http.createServer(function(req, res) {
 
 // path = {owner: , id: , d: }
 
+var clients = 0;
 var app = {
     paths: [
 
@@ -34,13 +35,13 @@ var app = {
 };
 
 socketIO.listen(server).on("connection", function (client) {
-   console.log("client connected with id: " + client.id);
+   console.log("client connected with id: " + clients.toString());
+   
+   client.emit("init", JSON.stringify({id: clients.toString(), data: app.paths}));
 
-	client.emit("init", JSON.stringify({id: client.id, data: app.paths}));
-
-    client.on("create", function (data) {
+   client.on("create", function (data) {
         app.paths.push(JSON.parse(data));
-        console.log('created path ' + JSON.parse(data).toString());
+        console.log('created path ' + data.toString());
     });
 
     client.on("update", function (data) {
@@ -62,4 +63,5 @@ socketIO.listen(server).on("connection", function (client) {
         app.paths = [];
         console.log("clear");
     });
+    clients++;
 }).set("log level", 1); 
