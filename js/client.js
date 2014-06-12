@@ -1,6 +1,6 @@
 var svgCon,
     ID, Color,
-    currentPath,
+    currentPath, cPath = [], 
     paths = [];
 
 $(function() {
@@ -54,7 +54,17 @@ $(function() {
 
     svgCon.on("mousemove", function(event) {
         if (currentPath != null) {
-            currentPath.d += Math.round(event.offsetX/5)*5 + "," + Math.round(event.offsetY/5)*5 + " ";
+            p = {x: Math.round(event.offsetX/5)*5, y: Math.round(event.offsetY/5)*5};
+            // if (cPath.length > 1) {
+            //     if (Math.abs((cPath[cPath.length-1].y - cPath[cPath.length-2].y) / (cPath[cPath.length-1].x - cPath[cPath.length-2].x)) ==
+            //         Math.abs((p.y - cPath[cPath.length-1].y) / (p.x - cPath[cPath.length-1].x))) {
+            //         cPath.slice(0,-1);
+            //         currentPath.split(' ').slice(0, -1).join(' ');   
+            //     }
+            // } else {
+            //     cPath.push(p);
+            // }
+            currentPath.d += p.x + "," + p.y + " ";
             $("#" + currentPath.id).attr({d: currentPath.d});
             iosocket.emit('update', JSON.stringify(currentPath));
         }
@@ -78,7 +88,7 @@ function createPath(owner) {
 
 function createPathFromData(path) {
     var svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        svgPath.id = path.id
+        svgPath.id = path.id;
         svgPath.setAttribute("class", "line " + path.owner);
         svgPath.setAttribute("d", path.d);
         svgPath.setAttribute("style", "stroke:" + path.color);
