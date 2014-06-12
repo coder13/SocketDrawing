@@ -54,7 +54,14 @@ $(function() {
 
     svgCon.on("mousemove", function(event) {
         if (currentPath != null) {
-            p = {x: Math.round(event.offsetX/5)*5, y: Math.round(event.offsetY/5)*5};
+            // console.log(event);
+            if (event.offsetX == undefined) {
+                p = {x: event.pageX-$("#mainSvg").offset().left, y: event.pageY-$("#mainSvg").offset().top};
+            } else {
+                p = {x: event.offsetX, y: event.offsetY};
+            }
+            // p = {x: Math.round(p.x/5)*5, y: Math.round(p.y/5)*5};
+            // console.log(event.offsetX + ", " + event.offsetY);
             // if (cPath.length > 1) {
             //     if (Math.abs((cPath[cPath.length-1].y - cPath[cPath.length-2].y) / (cPath[cPath.length-1].x - cPath[cPath.length-2].x)) ==
             //         Math.abs((p.y - cPath[cPath.length-1].y) / (p.x - cPath[cPath.length-1].x))) {
@@ -71,8 +78,10 @@ $(function() {
     });
 
     svgCon.on("mouseup", function(event) {
-        paths.push({owner: ID, color: currentPath.color, id: currentPath.id, d: currentPath.d});
-        currentPath = null;
+        if (currentPath) {
+            paths.push({owner: ID, color: currentPath.color, id: currentPath.id, d: currentPath.d});
+            currentPath = null;
+        }
     });
 });
 
