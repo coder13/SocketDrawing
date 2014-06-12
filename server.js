@@ -1,7 +1,8 @@
 var fs = require("fs"), 
     http = require("http"), 
     socketIO = require("socket.io"), 
-    port = (process.argv[2]? +process.argv[2]:8000);
+    port = (process.argv[2]? +process.argv[2]:8000), 
+    colors = ["red", "green", "blue", "orange", "yellow", "pink", "purple", "White"];
  
 var server = http.createServer(function(req, res) {
     try {
@@ -37,11 +38,11 @@ var app = {
 socketIO.listen(server).on("connection", function (client) {
    console.log("client connected with id: " + clients.toString());
    
-   client.emit("init", JSON.stringify({id: clients.toString(), data: app.paths}));
+   client.emit("init", JSON.stringify({id: clients.toString(), color: colors[clients % colors.length], data: app.paths}));
 
    client.on("create", function (data) {
         app.paths.push(JSON.parse(data));
-        console.log('created path ' + data.toString());
+        console.log('created path ' + data);
     });
 
     client.on("update", function (data) {

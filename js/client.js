@@ -1,5 +1,5 @@
 var svgCon,
-    ID, 
+    ID, Color,
     currentPath,
     paths = [];
 
@@ -19,6 +19,7 @@ $(function() {
     iosocket.on("init", function (data) {
         var initData = JSON.parse(data);
         ID = initData.id;
+        Color = initData.color;
         $("#id").text(initData.id);
         paths = initData.data;
         paths.forEach(function (p) {
@@ -60,7 +61,7 @@ $(function() {
     });
 
     svgCon.on("mouseup", function(event) {
-        paths.push({owner: currentPath.owner, id: currentPath.id, d: currentPath.d});
+        paths.push({owner: ID, color: currentPath.color, id: currentPath.id, d: currentPath.d});
         currentPath = null;
     });
 });
@@ -69,9 +70,10 @@ function createPath(owner) {
     var svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         svgPath.id = 'path_' + owner + "_" + (paths.length).toString();
         svgPath.setAttribute("class", "line " + owner);
+        svgPath.setAttribute("style", "stroke:" + Color);
     document.getElementById('mainSvg').appendChild(svgPath);
 
-    return {owner: owner, id: svgPath.id, d: 'M '};
+    return {owner: owner, color: Color, id: svgPath.id, d: 'M '};
 }
 
 function createPathFromData(path) {
@@ -79,6 +81,7 @@ function createPathFromData(path) {
         svgPath.id = path.id
         svgPath.setAttribute("class", "line " + path.owner);
         svgPath.setAttribute("d", path.d);
+        svgPath.setAttribute("style", "stroke:" + path.color);
     document.getElementById('mainSvg').appendChild(svgPath);
     return path;
 }
