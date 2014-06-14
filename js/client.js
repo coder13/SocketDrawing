@@ -54,6 +54,7 @@ $(function() {
     svgCon.on("mousemove", function(event) {
         if (currentPath != null) {
             currentPath.d += Math.round(event.offsetX/5)*5 + "," + Math.round(event.offsetY/5)*5 + " ";
+
             $("#" + currentPath.id).attr({d: currentPath.d});
             iosocket.emit('update', JSON.stringify(currentPath));
         }
@@ -76,9 +77,10 @@ function createPath(owner) {
 
 function createPathFromData(path) {
     var svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        svgPath.id = path.id
+        svgPath.id = path.id;
         svgPath.setAttribute("class", "line " + path.owner);
         svgPath.setAttribute("d", path.d);
+        svgPath.setAttribute("style", "stroke:green");
     document.getElementById('mainSvg').appendChild(svgPath);
     return path;
 }

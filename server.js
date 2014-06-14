@@ -40,7 +40,9 @@ socketIO.listen(server).on("connection", function (client) {
    client.emit("init", JSON.stringify({id: clients.toString(), data: app.paths}));
 
    client.on("create", function (data) {
-        app.paths.push(JSON.parse(data));
+        data = JSON.parse(data);
+        data.color = "#7f7f7f";
+        app.paths.push(data);
         console.log('created path ' + data.toString());
     });
 
