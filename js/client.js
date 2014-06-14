@@ -3,11 +3,20 @@ var svgCon,
     currentPath, cPath = [], 
     paths = [];
 
+function isMobile(){
+    // if we want a more complete list use this: http://detectmobilebrowsers.com/
+    // str.test() is more efficent than str.match()
+    // remember str.test is case sensitive
+    return (/iphone|ipod|android|ie|blackberry|fennec/).test(navigator.userAgent.toLowerCase());
+}
+
 $(function() {
+    console.log(isMobile());
+
     var iosocket = io.connect();
 
     iosocket.on("connect", function () {
-        $("#status").text("Connected");
+        $("#status").text("Connected ");
     });
     
     iosocket.on("disconnect", function() {
@@ -18,9 +27,9 @@ $(function() {
 
     iosocket.on("init", function (data) {
         var initData = JSON.parse(data);
-        ID = initData.id;
-        Color = initData.color;
-        $("#id").text(initData.id);
+        ID = initData.client.id;
+        Color = initData.client.color;
+        $("#id").text(initData.client.id);
         paths = initData.data;
         paths.forEach(function (p) {
             createPathFromData(p);
@@ -47,42 +56,34 @@ $(function() {
         }
     });
     
-    svgCon.on("mousedown", function(event) {
+    svgCon.on("touchstart mousedown", function(event) {
         currentPath = createPath(ID);
         iosocket.emit('create', JSON.stringify(currentPath));
     });
 
-    svgCon.on("mousemove", function(event) {
+    svgCon.on("touchmove mousemove", function(event) {
+        event.preventDefault();
         if (currentPath != null) {
-<<<<<<< HEAD
-            currentPath.d += Math.round(event.offsetX/5)*5 + "," + Math.round(event.offsetY/5)*5 + " ";
-
-=======
             // console.log(event);
-            if (event.offsetX == undefined) {
-                p = {x: event.pageX-$("#mainSvg").offset().left, y: event.pageY-$("#mainSvg").offset().top};
+            var p;
+            if (event.originalEvent.targetTouches) {
+                p = {x: event.originalEvent.targetTouches[0].clientX, y: event.originalEvent.targetTouches[0].clientY};
+                p = {x: p.x-$("#mainSvg").offset().left, y: p.y-$("#mainSvg").offset().top};
+            } else if (event.offsetX == undefined) { // firefox
+                if (event.pageX)
+                    p = {x: event.pageX-$("#mainSvg").offset().left, y: event.pageY-$("#mainSvg").offset().top};
             } else {
                 p = {x: event.offsetX, y: event.offsetY};
             }
-            // p = {x: Math.round(p.x/5)*5, y: Math.round(p.y/5)*5};
-            // console.log(event.offsetX + ", " + event.offsetY);
-            // if (cPath.length > 1) {
-            //     if (Math.abs((cPath[cPath.length-1].y - cPath[cPath.length-2].y) / (cPath[cPath.length-1].x - cPath[cPath.length-2].x)) ==
-            //         Math.abs((p.y - cPath[cPath.length-1].y) / (p.x - cPath[cPath.length-1].x))) {
-            //         cPath.slice(0,-1);
-            //         currentPath.split(' ').slice(0, -1).join(' ');   
-            //     }
-            // } else {
-            //     cPath.push(p);
-            // }
-            currentPath.d += p.x + "," + p.y + " ";
->>>>>>> ffe557c7252d419172fe7ff4219404899622c8fe
-            $("#" + currentPath.id).attr({d: currentPath.d});
-            iosocket.emit('update', JSON.stringify(currentPath));
+            if (p){
+                currentPath.d += p.x + "," + p.y + " ";
+                $("#" + currentPath.id).attr({d: currentPath.d});
+                iosocket.emit('update', JSON.stringify(currentPath));
+            }
         }
     });
 
-    svgCon.on("mouseup", function(event) {
+    svgCon.on("touchend touchcancel mouseup", function(event) {
         if (currentPath) {
             paths.push({owner: ID, color: currentPath.color, id: currentPath.id, d: currentPath.d});
             currentPath = null;
@@ -105,11 +106,7 @@ function createPathFromData(path) {
         svgPath.id = path.id;
         svgPath.setAttribute("class", "line " + path.owner);
         svgPath.setAttribute("d", path.d);
-<<<<<<< HEAD
-        svgPath.setAttribute("style", "stroke:green");
-=======
         svgPath.setAttribute("style", "stroke:" + path.color);
->>>>>>> ffe557c7252d419172fe7ff4219404899622c8fe
     document.getElementById('mainSvg').appendChild(svgPath);
     return path;
 }

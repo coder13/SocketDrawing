@@ -30,6 +30,7 @@ var server = http.createServer(function(req, res) {
 
 var clients = 0;
 var app = {
+    clients: [],
     paths: [
 
     ]
@@ -38,18 +39,17 @@ var app = {
 socketIO.listen(server).on("connection", function (client) {
    console.log("client connected with id: " + clients.toString());
    
-   client.emit("init", JSON.stringify({id: clients.toString(), color: colors[clients % colors.length], data: app.paths}));
+   var c = {clientID: client.id, id: clients, color: colors[clients % colors.length]};
+   app.clients.push(c)
+   client.emit("init", JSON.stringify({client: c, data: app.paths}));
 
    client.on("create", function (data) {
-<<<<<<< HEAD
-        data = JSON.parse(data);
-        data.color = "#7f7f7f";
-        app.paths.push(data);
-        console.log('created path ' + data.toString());
-=======
         app.paths.push(JSON.parse(data));
         console.log('created path ' + data);
->>>>>>> ffe557c7252d419172fe7ff4219404899622c8fe
+    });
+
+    client.on("disconnect", function (data) {
+        console.log('client ' + c.id + ' disconnected');
     });
 
     client.on("update", function (data) {
@@ -63,13 +63,14 @@ socketIO.listen(server).on("connection", function (client) {
         });
     });
 
+    client.on('log', function(data) {
+
+        console.log('[log] ' + data.toString());
+    });
+
     function update(path) {
         client.broadcast.emit('update', JSON.stringify(path));
     }
 
-    client.on("clear", function(data) {
-        app.paths = [];
-        console.log("clear");
-    });
     clients++;
-}).set("log level", 1); 
+}).set("log level", 1);
